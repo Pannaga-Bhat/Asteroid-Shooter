@@ -1,6 +1,27 @@
 # Asteroid Shooter Game
 This C++ code implements a simple Asteroids-like game using the SFML (Simple and Fast Multimedia Library) for graphics. The game includes classes for different entities like asteroids, bullets, and the player’s spaceship, along with animations for various actions like explosions. The main loop handles user input, collisions, updates, and rendering.
 
+## Running the game
+Run the following commands in order on the terminal:
+
+    make
+    ./main
+Controls are 
+1. <kbd>&uarr;</kbd> for speed up
+2. <kbd>&darr;</kbd> for slow down
+3. <kbd>&larr;</kbd> and <kbd>&rarr;</kbd> for rotation
+4. <kbd>Space</kbd> for firing
+5. <kbd>P</kbd> to toggle pause
+6. <kbd>R</kbd> to restart
+7. <kbd>Q</kbd> to quit
+
+## Running tests
+Run the following commands in the terminal:
+
+    g++ -std=c++11 -pthread *.cpp googletest/build/lib/libgtest.a -o test_executable -L /mnt/c/Users/HP/Desktop/SE/Demo/SFML-2.6.0/lib -lsfml-graphics -lsfml-window -lsfml-system
+    ./test_executable
+The results of all the tests will now be displayed.
+
 ## Classes
 - Animation:
     - Attributes:
