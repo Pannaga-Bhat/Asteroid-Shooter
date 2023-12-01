@@ -39,3 +39,27 @@ void player::update()
     if (y < 0)
         y = H;
 }
+
+void player::setThrust(bool thrust)
+{
+    this->thrust = thrust;
+}
+
+bool player::getThrust()
+{
+    return thrust;
+}
+
+void player::setDir(int dir)
+{
+    this->dir = dir;
+}
+
+int player::getDir()
+{
+    return dir;
+}
+
+// player::~player()
+// {
+// }

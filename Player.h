@@ -4,11 +4,18 @@
 
 class player : public Entity
 {
-public:
+private:
     bool thrust;
     int dir;
+
+public:
     player();
     void update();
+    // Generate definitions for getters and setters
+    bool getThrust();
+    void setThrust(bool thrust);
+    int getDir();
+    void setDir(int dir);
 };
 
 #endif

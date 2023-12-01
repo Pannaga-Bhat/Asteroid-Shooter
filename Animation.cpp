@@ -29,3 +29,43 @@ bool Animation::isEnd()
 {
     return Frame + speed >= frames.size();
 }
+
+void Animation::setSprite(Sprite sprite)
+{
+    this->sprite = sprite;
+}
+
+Sprite Animation::getSprite()
+{
+    return sprite;
+}
+
+void Animation::setSpeed(float speed)
+{
+    this->speed = speed;
+}
+
+float Animation::getSpeed()
+{
+    return speed;
+}
+
+void Animation::setFrame(float frame)
+{
+    Frame = frame;
+}
+
+float Animation::getFrame()
+{
+    return Frame;
+}
+
+void Animation::setFrames(std::vector<IntRect> frames)
+{
+    this->frames = frames;
+}
+
+std::vector<IntRect> Animation::getFrames()
+{
+    return frames;
+}

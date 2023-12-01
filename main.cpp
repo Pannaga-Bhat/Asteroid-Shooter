@@ -12,12 +12,13 @@
 
 using namespace sf;
 
-bool isCollide(Entity *a, Entity *b)
-{
-    return (b->x - a->x) * (b->x - a->x) +
-               (b->y - a->y) * (b->y - a->y) <
-           (a->R + b->R) * (a->R + b->R);
+
+bool isCollide(Entity *a, Entity *b) {
+    return (b->getX() - a->getX()) * (b->getX() - a->getX()) +
+               (b->getY() - a->getY()) * (b->getY() - a->getY()) <
+           (a->getR() + b->getR()) * (a->getR() + b->getR());
 }
+
 
 void keyPressEventHandler(RenderWindow *app, Animation *sBullet, std::list<Entity *> *entities, player *p, Event *event)
 {
@@ -25,60 +26,60 @@ void keyPressEventHandler(RenderWindow *app, Animation *sBullet, std::list<Entit
         if (event->key.code == Keyboard::Space)
         {
             bullet *b = new bullet();
-            b->settings(*sBullet, p->x, p->y, p->angle, 10);
+            b->settings(*sBullet, p->getX(), p->getY(), p->getAngle(), 10);
             entities->push_back(b);
         }
 
     if (Keyboard::isKeyPressed(Keyboard::Right))
-        p->angle += 3;
+        p->setAngle((p->getAngle() + 3));
     if (Keyboard::isKeyPressed(Keyboard::Left))
-        p->angle -= 3;
+        p->setAngle((p->getAngle() - 3));
     if (Keyboard::isKeyPressed(Keyboard::Up))
     {
-        p->thrust = true;
-        p->dir = 1;
+        p->setThrust(true);
+        p->setDir(1);
     }
     else if (Keyboard::isKeyPressed(Keyboard::Down))
     {
-        p->thrust = true;
-        p->dir = -1;
+        p->setThrust(true);
+        p->setDir(-1);
     }
     else
     {
-        p->thrust = false;
+        p->setThrust(false);
     }
 }
 
 void bulletAsteroidCollisionHandler(Entity *a, Entity *b, Animation *sExplosion, Animation *sRock_small, std::list<Entity *> *entities)
 {
-    a->life = false;
-    b->life = false;
+    a->setLife(false);
+    b->setLife(false);
 
     Entity *e = new Entity();
-    e->settings(*sExplosion, a->x, a->y);
-    e->name = "explosion";
+    e->settings(*sExplosion, a->getX(), a->getY());
+    e->setName("explosion");
     entities->push_back(e);
 
     for (int i = 0; i < 2; i++)
     {
-        if (a->R == 15)
+        if (a->getR() == 15)
             continue;
         Entity *e = new asteroid();
-        e->settings(*sRock_small, a->x, a->y, rand() % 360, 15);
+        e->settings(*sRock_small, a->getX(), a->getY(), rand() % 360, 15);
         entities->push_back(e);
     }
 }
 
 void playerAsteroidCollisionHandler(player *p, Entity *a, Entity *b, Animation *sExplosion_ship, Animation *sPlayer, std::list<Entity *> *entities)
 {
-    b->life = false;
+    b->setLife(false);
     Entity *e = new Entity();
-    e->settings(*sExplosion_ship, a->x, a->y);
-    e->name = "explosion";
+    e->settings(*sExplosion_ship, a->getX(), a->getY());
+    e->setName("explosion");
     entities->push_back(e);
     p->settings(*sPlayer, W / 2, H / 2, 0, 20);
-    p->dx = 0;
-    p->dy = 0;
+    p->setDx(0);
+    p->setDy(0);
 }
 
 int main()
@@ -170,7 +171,7 @@ int main()
             for (auto a : entities)
                 for (auto b : entities)
                 {
-                    if (a->name == "asteroid" && b->name == "bullet")
+                    if (a->getName() == "asteroid" && b->getName() == "bullet")
                         if (isCollide(a, b))
                         {
                             score++;
@@ -178,27 +179,39 @@ int main()
                             text.setString("Score: " + std::to_string(score));
                         }
 
-                    if (a->name == "player" && b->name == "asteroid")
+                    if (a->getName() == "player" && b->getName() == "asteroid")
                         if (isCollide(a, b))
                         {
                             playerAsteroidCollisionHandler(p, a, b, &sExplosion_ship, &sPlayer, &entities);
                             text.setString("Game Over!!!\nYour Score Was: " + std::to_string(score) + "\nPress R to restart...");
-                            // text.setOrigin(400, 600);
                             score = 0;
+                            for (auto e : entities){
+                                if (e->getName() == "bullet" || e->getName() == "asteroid"){
+                                    e->setLife(0);
+                                }
+                            }
+                            for (int i = 0; i < 8; i++)
+                            {
+                                asteroid *a = new asteroid();
+                                a->settings(sRock, rand() % W, rand() % H, rand() % 360, 25);
+                                entities.push_back(a);
+                            }
                             game_over = true;
                             app.draw(text);
                         }
                 }
 
-            if (p->thrust)
-                p->anim = sPlayer_go;
+            if (p->getThrust())
+                p->setAnim(sPlayer_go);
             else
-                p->anim = sPlayer;
+                p->setAnim(sPlayer);
 
-            for (auto e : entities)
-                if (e->name == "explosion")
-                    if (e->anim.isEnd())
-                        e->life = 0;
+            for (auto e : entities){
+                if (e->getName() == "explosion"){
+                    if (e->getAnim().isEnd())
+                        e->setLife(0);
+                }
+            }
 
             if (rand() % 150 == 0)
             {
@@ -212,9 +225,12 @@ int main()
                 Entity *e = *i;
 
                 e->update();
-                e->anim.update();
+                Animation tmpAnim = e->getAnim();
+                tmpAnim.update();
+                e->setAnim(tmpAnim);
+                // delete &tmpAnim;
 
-                if (e->life == false)
+                if (e->getLife() == false)
                 {
                     i = entities.erase(i);
                     delete e;

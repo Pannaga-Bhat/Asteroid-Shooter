@@ -1,8 +1,8 @@
 CXX = g++
 
 CXXFLAGS = -Iinclude
-LDFLAGS = -Llib -Wl,-rpath ./lib
-LDLIBS = -lsfml-system -lsfml-window -lsfml-graphics -lsfml-audio -lsfml-network
+# LDFLAGS = -Llib -Wl,-rpath ./lib
+LDLIBS = -lsfml-system -lsfml-window -lsfml-graphics -lsfml-audio -lsfml-network -lm
 
 SRCS = main.cpp Entity.cpp Animation.cpp Asteroid.cpp Bullet.cpp Player.cpp
 
