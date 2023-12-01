@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "main.h" // Replace this with your game header file
+#include "main.h"
 
 // Test if collision detection works correctly
 TEST(CollisionTest, ObjectsCollide) {
@@ -27,9 +27,8 @@ TEST(CollisionTest, ObjectsCollide) {
 // Test if creating an asteroid sets its position and attributes correctly
 TEST(AsteroidCreationTest, AsteroidCreation) {
     Animation anim;
-    Texture t4; // Replace with your actual texture
-    t4.loadFromFile("images/rock.png"); // Assuming this is the path to your texture
-
+    Texture t4;
+    t4.loadFromFile("images/rock.png");
     asteroid* ast = new asteroid();
     ast->settings(anim, 300, 400, 45, 30); // Set arbitrary values for position and attributes
 
@@ -45,8 +44,8 @@ TEST(AsteroidCreationTest, AsteroidCreation) {
 // Test if bullet creation and settings are correct
 TEST(BulletCreationTest, BulletCreation) {
     Animation anim;
-    Texture t5; // Replace with your actual texture
-    t5.loadFromFile("images/fire_blue.png"); // Assuming this is the path to your texture
+    Texture t5;
+    t5.loadFromFile("images/fire_blue.png");
 
     bullet* b = new bullet();
     b->settings(anim, 200, 200, 90, 15); // Set arbitrary values for position and attributes
@@ -81,10 +80,10 @@ TEST(PlayerMovementTest, PlayerMovement) {
 
 // Test case for keyPressEventHaldler function
 TEST(KeyPressEventHandlerTest, SpaceBar) {
-    RenderWindow app; // Replace this with an instance of your RenderWindow
-    Animation sBullet; // Replace this with your Animation instance
-    std::list<Entity*> entities; // Replace this with your entities list
-    player p; // Replace this with your player object
+    RenderWindow app; 
+    Animation sBullet; 
+    std::list<Entity*> entities;
+    player p;
 
     Event event;
     event.type = Event::KeyPressed;
@@ -96,12 +95,9 @@ TEST(KeyPressEventHandlerTest, SpaceBar) {
         keyPressEventHandler(&app, &sBullet, &entities, &p, &event);
     }
     
-    // Assuming the space bar press will create a bullet in the entities list
     ASSERT_FALSE(entities.empty());
     EXPECT_EQ(entities.size(), 10);
 
-    // Assuming the bullet is correctly added to the entities list
-    // You may need to add more specific assertions based on your game logic
     Entity* bullet = entities.back();
     EXPECT_EQ(bullet->getName(), "bullet");
 
@@ -110,7 +106,7 @@ TEST(KeyPressEventHandlerTest, SpaceBar) {
 }
 
 TEST(IntegrationTest, ObjectsCollide) {
-    player p; // Replace this with your player object
+    player p;
     Entity* b = new Entity();
 
     // Set positions and radii for testing collision
@@ -123,9 +119,9 @@ TEST(IntegrationTest, ObjectsCollide) {
     b->setY(100);
     b->setR(20);
 
-    RenderWindow app; // Replace this with an instance of your RenderWindow
-    Animation sBullet; // Replace this with your Animation instance
-    std::list<Entity*> entities; // Replace this with your entities list
+    RenderWindow app; 
+    Animation sBullet;
+    std::list<Entity*> entities;
 
     Event event;
     event.type = Event::KeyPressed;
@@ -139,7 +135,6 @@ TEST(IntegrationTest, ObjectsCollide) {
 
     for(int i = 0; i < 10; i++){
         entities.back()->update();
-        // std::cout << entities.back()->x << "    " << entities.back()->y << std::endl;
     }
     
     bool result = isCollide(entities.back(), b);

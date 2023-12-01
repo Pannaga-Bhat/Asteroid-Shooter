@@ -139,7 +139,6 @@ void updateEntities(std::list<Entity*> &entities){
         Animation tmpAnim = e->getAnim();
         tmpAnim.update();
         e->setAnim(tmpAnim);
-        // delete &tmpAnim;
 
         if (e->getLife() == false)
         {
@@ -152,7 +151,7 @@ void updateEntities(std::list<Entity*> &entities){
 }
 
 
-int main1()
+int main()
 {
     srand(time(0));
 
