@@ -1,0 +1,44 @@
+
+Creating a sequence diagram for your game interactions would require a more complex diagram due to the dynamic nature of the game and multiple objects involved. However, I can provide you with a simplified sequence diagram that shows the interactions between the player, spaceship, and asteroids for a specific scenario: shooting a laser at an asteroid. This sequence diagram will illustrate the message flow for this specific action:
+
+mermaid
+Copy code
+sequenceDiagram
+    participant Player
+    participant Spaceship
+    participant Asteroid
+    participant Game
+
+    Player->>Spaceship: Control spaceship
+    Spaceship->>Game: Spaceship controls
+    Player->>Spaceship: Shoot laser (Space Bar)
+    Spaceship->>Spaceship: Rotate spaceship
+    Spaceship->>Spaceship: Calculate laser direction
+    Spaceship->>Game: Laser fired
+    Game->>Asteroid: Laser fired
+    Asteroid->>Asteroid: Check collision
+    alt Asteroid hit
+        Asteroid->>Game: Asteroid hit
+        Game->>Asteroid: Destroy asteroid
+        Asteroid->>Game: Spawn new asteroid
+    else Asteroid missed
+        Asteroid->>Game: Laser missed
+    end
+    Game->>Player: Laser hit result
+In this sequence diagram:
+
+The "Player" controls the "Spaceship" by providing input.
+
+The "Spaceship" processes the player's input, including rotating the spaceship and calculating the laser direction.
+
+The "Spaceship" sends a message to the "Game" to indicate that a laser has been fired.
+
+The "Game" initiates the interaction with an "Asteroid" by sending a laser fired message.
+
+The "Asteroid" checks if it's hit by the laser, and based on the result, there are two possible scenarios:
+
+If the asteroid is hit, it sends a message to the "Game" to destroy itself and spawn a new asteroid.
+If the asteroid is missed, it sends a message to the "Game" indicating that the laser missed.
+The "Game" informs the "Player" about the result of the laser hit.
+
+This sequence diagram demonstrates the flow of messages and interactions when the player shoots a laser at an asteroid. You can extend and modify this diagram to cover other interactions and scenarios within your game as needed

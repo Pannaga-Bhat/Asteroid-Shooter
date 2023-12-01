@@ -1,0 +1,6 @@
+/SFML-2.6.0
+/googletest
+/CMakeFiles
+.vscode
+CMakeCache.txt
+CMakeLists.txt

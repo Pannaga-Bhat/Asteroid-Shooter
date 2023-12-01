@@ -1,0 +1,30 @@
+
+In this activity diagram:
+
+- The game starts, and the player can control the spaceship.
+- The player can control the spaceship using the up and down arrow keys to move and the left and right arrow keys to rotate.
+- The player can shoot lasers by pressing the space bar.
+- When a laser hits an asteroid (Asteroid Hit?), it can either destroy the spaceship (Destroy Spaceship) or destroy the asteroid (Destroy Asteroid).
+- If the spaceship is destroyed, a new spaceship is spawned (Spawn New Spaceship).
+- The game continues, and the player can control the new spaceship, shoot lasers, and encounter more asteroids.
+
+This activity diagram provides an overview of the game's interaction flow based on the actions you described. You can include this Mermaid.js Markdown code in your documentation to visualize the game's logic.
+
+stateDiagram-v2
+        state fork_state <<fork>>
+        state join_state <<join>>
+	    [*] --> StartGame
+        StartGame --> SpawnNewSpaceShip
+        SpawnNewSpaceShip --> ControlSpaceShip
+        ControlSpaceShip --> fork_state: Keyboard Input
+        fork_state --> MoveSpaceShip
+        fork_state --> RotateSpaceShip
+	    fork_state --> ShootBullet
+        ShootBullet --> join_state
+        MoveSpaceShip --> join_state
+        RotateSpaceShip --> join_state
+        join_state --> ControlSpaceShip
+        ControlSpaceShip --> GameOver: Hit By Asteroid
+        GameOver --> [*]: Exit
+        GameOver --> StartGame: Start New Game
+	    

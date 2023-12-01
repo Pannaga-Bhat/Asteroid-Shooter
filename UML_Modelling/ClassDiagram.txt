@@ -1,0 +1,68 @@
+classDiagram
+    class Animation {
+        Frame: float
+        speed: float
+        sprite: Sprite
+        frames: std::vector<IntRect>
+
+        +Animation()
+        +Animation(t: Texture, x: int, y: int, w: int, h: int, count: int, Speed: float)
+        +update(): void
+        +isEnd(): bool
+    }
+
+    class Entity {
+        x: float
+        y: float
+        dx: float
+        dy: float
+        R: float
+        angle: float
+        life: bool
+        name: string
+        anim: Animation
+
+        +Entity()
+        +settings(a: Animation, X: int, Y: int, Angle: float = 0, radius: int = 1): void
+        +update(): void
+        +draw(app: RenderWindow): void
+    }
+
+    class asteroid {
+        +asteroid()
+        +update(): void
+    }
+
+    class bullet {
+        +bullet()
+        +update(): void
+    }
+
+    class player {
+        thrust: bool
+        dir: int
+
+        +player()
+        +update(): void
+    }
+
+    class bool {
+    }
+
+    class IntRect {
+    }
+
+    class Texture {
+    }
+
+    class Sprite {
+    }
+
+    class RenderWindow {
+    }
+
+    Entity <|-- asteroid
+    Entity <|-- bullet
+    Entity <|-- player
+    Animation "1" o-- "1..*" IntRect : frames
+    Animation "1" o-- "1" Sprite : sprite

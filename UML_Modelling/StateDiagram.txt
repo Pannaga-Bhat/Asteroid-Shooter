@@ -1,0 +1,51 @@
+stateDiagram
+    [*] --> GameStarted
+    GameStarted --> SpaceshipActive: Spaceship Controls
+    SpaceshipActive --> Shooting: Space Bar Pressed
+    SpaceshipActive --> AsteroidHit: Asteroid Collision
+    Shooting --> BulletFired: Space Bar Released
+    BulletFired --> SpaceshipActive: Laser Travel
+    AsteroidHit --> SpaceshipDestroyed: Spaceship Collision
+    AsteroidHit --> AsteroidDestroyed: Laser Hit
+    SpaceshipDestroyed --> GameOver: New Spaceship Spawned
+    AsteroidDestroyed --> GameActive: Asteroid Destroyed
+    GameOver --> GameStarted: Game Restart
+
+    state GameStarted {
+        [*] --> Loading: Load Assets
+        Loading --> SpaceshipActive: Assets Loaded
+    }
+
+    state SpaceshipActive {
+        Spaceship Controls
+    }
+
+    state Shooting {
+        Space Bar Pressed
+    }
+
+    state BulletFired {
+        Laser Travel
+    }
+
+    state AsteroidHit {
+        Asteroid Collision
+    }
+
+    state SpaceshipDestroyed {
+        Spaceship Collision
+    }
+
+    state AsteroidDestroyed {
+        Laser Hit
+    }
+
+    state GameOver {
+        New Spaceship Spawned
+    }
+
+    state GameActive {
+        Game Continues
+    }
+
+    [*] --> GameStarted
