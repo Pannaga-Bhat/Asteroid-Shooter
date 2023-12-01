@@ -4,3 +4,5 @@
 .vscode
 CMakeCache.txt
 CMakeLists.txt
+/include
+/lib

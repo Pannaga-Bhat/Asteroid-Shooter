@@ -3,184 +3,19 @@
 #include <list>
 #include <cmath>
 #include <string>
+
+#include "Animation.h"
+#include "Entity.h"
+#include "Asteroid.h"
+#include "Bullet.h"
+#include "Player.h"
+
 using namespace sf;
 
 const int W = 1200;
 const int H = 800;
 
 float DEGTORAD = 0.017453f;
-
-class Animation
-{
-public:
-    float Frame, speed;
-    Sprite sprite;
-    std::vector<IntRect> frames;
-
-    Animation() {}
-
-    Animation(Texture &t, int x, int y, int w, int h, int count, float Speed)
-    {
-        Frame = 0;
-        speed = Speed;
-
-        for (int i = 0; i < count; i++)
-            frames.push_back(IntRect(x + i * w, y, w, h));
-
-        sprite.setTexture(t);
-        sprite.setOrigin(w / 2, h / 2);
-        sprite.setTextureRect(frames[0]);
-    }
-
-    void update()
-    {
-        Frame += speed;
-        int n = frames.size();
-        if (Frame >= n)
-            Frame -= n;
-        if (n > 0)
-            sprite.setTextureRect(frames[int(Frame)]);
-    }
-
-    bool isEnd()
-    {
-        return Frame + speed >= frames.size();
-    }
-};
-
-class Entity
-{
-public:
-    float x, y, dx, dy, R, angle;
-    bool life;
-    std::string name;
-    Animation anim;
-
-    Entity()
-    {
-        life = 1;
-    }
-
-    void settings(Animation &a, int X, int Y, float Angle = 0, int radius = 1)
-    {
-        anim = a;
-        x = X;
-        y = Y;
-        angle = Angle;
-        R = radius;
-    }
-
-    virtual void update(){};
-
-    void draw(RenderWindow &app)
-    {
-        anim.sprite.setPosition(x, y);
-        anim.sprite.setRotation(angle + 90);
-        app.draw(anim.sprite);
-
-        CircleShape circle(R);
-        circle.setFillColor(Color(255, 0, 0, 170));
-        circle.setPosition(x, y);
-        circle.setOrigin(R, R);
-        // app.draw(circle);
-    }
-
-    virtual ~Entity(){};
-};
-
-class asteroid : public Entity
-{
-public:
-    asteroid()
-    {
-        dx = rand() % 8 - 4;
-        dy = rand() % 8 - 4;
-        name = "asteroid";
-    }
-
-    void update()
-    {
-        x += dx;
-        y += dy;
-
-        if (x > W)
-            x = 0;
-        if (x < 0)
-            x = W;
-        if (y > H)
-            y = 0;
-        if (y < 0)
-            y = H;
-    }
-};
-
-class bullet : public Entity
-{
-public:
-    bullet()
-    {
-        name = "bullet";
-    }
-
-    void update()
-    {
-        dx = cos(angle * DEGTORAD) * 6;
-        dy = sin(angle * DEGTORAD) * 6;
-        // angle+=rand()%7-3;  /*try this*/
-        x += dx;
-        y += dy;
-
-        if (x > W || x < 0 || y > H || y < 0)
-            life = 0;
-    }
-};
-
-class player : public Entity
-{
-public:
-    bool thrust;
-    int dir;
-
-    player()
-    {
-        name = "player";
-        dir = 1;
-    }
-
-    void update()
-    {
-        if (thrust)
-        {
-            dx += cos(angle * DEGTORAD) * 0.2;
-            dy += sin(angle * DEGTORAD) * 0.2;
-        }
-        else
-        {
-            dx *= 0.95;
-            dy *= 0.95;
-        }
-
-        int maxSpeed = 15;
-        float speed = sqrt(dx * dx + dy * dy);
-        if (speed > maxSpeed)
-        {
-            dx *= maxSpeed / speed;
-            dy *= maxSpeed / speed;
-        }
-
-        x += dx * dir;
-        y += dy * dir;
-
-        if (x > W)
-            x = 0;
-        if (x < 0)
-            x = W;
-        if (y > H)
-            y = 0;
-        if (y < 0)
-            y = H;
-    }
-};
 
 bool isCollide(Entity *a, Entity *b)
 {
@@ -238,6 +73,7 @@ void bulletAsteroidCollisionHandler(Entity *a, Entity *b, Animation *sExplosion,
         entities->push_back(e);
     }
 }
+
 void playerAsteroidCollisionHandler(player *p, Entity *a, Entity *b, Animation *sExplosion_ship, Animation *sPlayer, std::list<Entity *> *entities)
 {
     b->life = false;
@@ -249,6 +85,7 @@ void playerAsteroidCollisionHandler(player *p, Entity *a, Entity *b, Animation *
     p->dx = 0;
     p->dy = 0;
 }
+
 int main()
 {
     srand(time(0));
@@ -282,9 +119,9 @@ int main()
     bool game_over = false;
     bool paused = false;
     bool start = false; // !TODO
-    sf::Text text;
-
+    
     // Set font properties
+    sf::Text text;
     sf::Font font;
     font.loadFromFile("./subatomic.ttf");
     text.setFont(font); // font is a sf::Font
@@ -314,23 +151,22 @@ int main()
     {
         while (app.pollEvent(event))
         {
-            if (event.type == Event::Closed || (event.type == Event::KeyPressed && event.key.code == sf::Keyboard::Q))
+            if (event.type == Event::Closed || (event.type == Event::KeyPressed && event.key.code == sf::Keyboard::Q)){
                 app.close();
+            }
                 
-            if (game_over && event.type == Event::KeyPressed && event.key.code == sf::Keyboard::R)
-            {
+            if (game_over && event.type == Event::KeyPressed && event.key.code == sf::Keyboard::R){
                 game_over = !game_over;
                 app.draw(background);
-                
                 text.setString("Score: " + std::to_string(score));
                 app.draw(text);
             }
-            if (event.type == Event::KeyPressed && event.key.code == sf::Keyboard::P)
-            {
+
+            if (event.type == Event::KeyPressed && event.key.code == sf::Keyboard::P){
                 paused = !paused;
             }
-            if (!game_over && !paused)
-            {
+            
+            if (!game_over && !paused){
                 keyPressEventHandler(&app, &sBullet, &entities, p, &event);
             }
         }
