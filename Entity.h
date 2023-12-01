@@ -1,8 +1,13 @@
-#ifndef ENTITY_H
-#define ENTITY_H
 #include <SFML/Graphics.hpp>
 #include <string>
 #include "Animation.h"
+
+#ifndef ENTITY_H
+#define ENTITY_H
+
+extern int W;
+extern int H;
+extern float DEGTORAD;
 
 using namespace sf;
 

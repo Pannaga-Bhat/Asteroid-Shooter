@@ -12,11 +12,6 @@
 
 using namespace sf;
 
-const int W = 1200;
-const int H = 800;
-
-float DEGTORAD = 0.017453f;
-
 bool isCollide(Entity *a, Entity *b)
 {
     return (b->x - a->x) * (b->x - a->x) +

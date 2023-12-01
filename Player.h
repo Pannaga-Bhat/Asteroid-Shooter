@@ -5,7 +5,6 @@
 class player : public Entity
 {
 public:
-
     bool thrust;
     int dir;
     player();

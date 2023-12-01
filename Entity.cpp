@@ -1,5 +1,10 @@
 #include "Entity.h"
 
+extern int W = 1200;
+extern int H = 800;
+
+float extern DEGTORAD = 0.017453f;
+
 Entity::Entity()
 {
     life = 1;
