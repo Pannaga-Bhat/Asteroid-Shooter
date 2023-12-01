@@ -1,24 +1,12 @@
-#include <SFML/Graphics.hpp>
-#include <time.h>
-#include <list>
-#include <cmath>
-#include <string>
-
-#include "Animation.h"
-#include "Entity.h"
-#include "Asteroid.h"
-#include "Bullet.h"
-#include "Player.h"
+#include "main.h"
 
 using namespace sf;
-
 
 bool isCollide(Entity *a, Entity *b) {
     return (b->getX() - a->getX()) * (b->getX() - a->getX()) +
                (b->getY() - a->getY()) * (b->getY() - a->getY()) <
            (a->getR() + b->getR()) * (a->getR() + b->getR());
 }
-
 
 void keyPressEventHandler(RenderWindow *app, Animation *sBullet, std::list<Entity *> *entities, player *p, Event *event)
 {
@@ -82,7 +70,89 @@ void playerAsteroidCollisionHandler(player *p, Entity *a, Entity *b, Animation *
     p->setDy(0);
 }
 
-int main()
+void handleUserAction(Event &event, RenderWindow &app, Animation &sBullet, std::list<Entity *> &entities, player *p, bool &game_over, bool &paused, Sprite &background, int &score, sf::Text &text){
+    if (event.type == Event::Closed || (event.type == Event::KeyPressed && event.key.code == sf::Keyboard::Q)){
+        app.close();
+    }
+        
+    if (game_over && event.type == Event::KeyPressed && event.key.code == sf::Keyboard::R){
+        game_over = !game_over;
+        app.draw(background);
+        text.setString("Score: " + std::to_string(score));
+        app.draw(text);
+    }
+
+// Toggle pause if the user presses the 'P' key
+    if (event.type == Event::KeyPressed && event.key.code == sf::Keyboard::P){
+        paused = !paused;
+    }
+    
+    // Handle user actions if the game is not over and not paused
+    if (!game_over && !paused){
+        keyPressEventHandler(&app, &sBullet, &entities, p, &event);
+    }
+}
+
+// Function to check for collisions between entities
+void checkCollisions(std::list<Entity*> &entities, player *p, Animation &sExplosion, Animation &sRock_small, Animation &sRock, Animation &sExplosion_ship, Animation &sPlayer, RenderWindow &app, int &score, sf::Text &text, bool &game_over){
+    for (auto a : entities){
+        for (auto b : entities){
+            if (a->getName() == "asteroid" && b->getName() == "bullet")
+                if (isCollide(a, b))
+                {
+                    score++;
+                    bulletAsteroidCollisionHandler(a, b, &sExplosion, &sRock_small, &entities);
+                    text.setString("Score: " + std::to_string(score));
+                }
+
+            if (a->getName() == "player" && b->getName() == "asteroid")
+                if (isCollide(a, b))
+                {
+                    playerAsteroidCollisionHandler(p, a, b, &sExplosion_ship, &sPlayer, &entities);
+                    text.setString("Game Over!!!\nYour Score Was: " + std::to_string(score) + "\nPress R to restart...");
+                    score = 0;
+                    for (auto e : entities){
+                        if (e->getName() == "bullet" || e->getName() == "asteroid"){
+                            e->setLife(0);
+                        }
+                    }
+                    for (int i = 0; i < 8; i++)
+                    {
+                        asteroid *a = new asteroid();
+                        a->settings(sRock, rand() % W, rand() % H, rand() % 360, 25);
+                        entities.push_back(a);
+                    }
+                    game_over = true;
+                    app.draw(text);
+                }
+        }
+    }
+}
+
+
+void updateEntities(std::list<Entity*> &entities){
+    for (auto i = entities.begin(); i != entities.end();)
+    {
+        Entity *e = *i;
+
+        e->update();
+        Animation tmpAnim = e->getAnim();
+        tmpAnim.update();
+        e->setAnim(tmpAnim);
+        // delete &tmpAnim;
+
+        if (e->getLife() == false)
+        {
+            i = entities.erase(i);
+            delete e;
+        }
+        else
+            i++;
+    }
+}
+
+
+int main1()
 {
     srand(time(0));
 
@@ -145,62 +215,16 @@ int main()
 
     while (app.isOpen())
     {
+        
         while (app.pollEvent(event))
         {
-            if (event.type == Event::Closed || (event.type == Event::KeyPressed && event.key.code == sf::Keyboard::Q)){
-                app.close();
-            }
-                
-            if (game_over && event.type == Event::KeyPressed && event.key.code == sf::Keyboard::R){
-                game_over = !game_over;
-                app.draw(background);
-                text.setString("Score: " + std::to_string(score));
-                app.draw(text);
-            }
-
-            if (event.type == Event::KeyPressed && event.key.code == sf::Keyboard::P){
-                paused = !paused;
-            }
-            
-            if (!game_over && !paused){
-                keyPressEventHandler(&app, &sBullet, &entities, p, &event);
-            }
+            handleUserAction(event, app, sBullet, entities, p, game_over, paused, background, score, text);
         }
+        
         if (!paused && !game_over)
         {
-            for (auto a : entities)
-                for (auto b : entities)
-                {
-                    if (a->getName() == "asteroid" && b->getName() == "bullet")
-                        if (isCollide(a, b))
-                        {
-                            score++;
-                            bulletAsteroidCollisionHandler(a, b, &sExplosion, &sRock_small, &entities);
-                            text.setString("Score: " + std::to_string(score));
-                        }
-
-                    if (a->getName() == "player" && b->getName() == "asteroid")
-                        if (isCollide(a, b))
-                        {
-                            playerAsteroidCollisionHandler(p, a, b, &sExplosion_ship, &sPlayer, &entities);
-                            text.setString("Game Over!!!\nYour Score Was: " + std::to_string(score) + "\nPress R to restart...");
-                            score = 0;
-                            for (auto e : entities){
-                                if (e->getName() == "bullet" || e->getName() == "asteroid"){
-                                    e->setLife(0);
-                                }
-                            }
-                            for (int i = 0; i < 8; i++)
-                            {
-                                asteroid *a = new asteroid();
-                                a->settings(sRock, rand() % W, rand() % H, rand() % 360, 25);
-                                entities.push_back(a);
-                            }
-                            game_over = true;
-                            app.draw(text);
-                        }
-                }
-
+            checkCollisions(entities, p, sExplosion, sRock_small, sRock, sExplosion_ship, sPlayer, app, score, text, game_over);
+            
             if (p->getThrust())
                 p->setAnim(sPlayer_go);
             else
@@ -219,25 +243,7 @@ int main()
                 a->settings(sRock, 0, rand() % H, rand() % 360, 25);
                 entities.push_back(a);
             }
-
-            for (auto i = entities.begin(); i != entities.end();)
-            {
-                Entity *e = *i;
-
-                e->update();
-                Animation tmpAnim = e->getAnim();
-                tmpAnim.update();
-                e->setAnim(tmpAnim);
-                // delete &tmpAnim;
-
-                if (e->getLife() == false)
-                {
-                    i = entities.erase(i);
-                    delete e;
-                }
-                else
-                    i++;
-            }
+            updateEntities(entities);
         }
 
         //////draw//////
